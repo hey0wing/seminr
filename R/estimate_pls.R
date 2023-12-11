@@ -32,6 +32,9 @@
 #' @param stopCriterion A parameter specifying the stop criterion for estimating the PLS model.
 #'   Default value is 7.
 #'
+#' @param HTMT_setting_plus A parameter specifying plus or original in HTMT
+#'   Default value is TRUE.
+#'
 #' @return A list of the estimated parameters for the SEMinR model including:
 #'  \item{meanData}{A vector of the indicator means.}
 #'  \item{sdData}{A vector of the indicator standard deviations}
@@ -103,7 +106,8 @@ estimate_pls <- function(data,
                          missing = mean_replacement,
                          missing_value = NA,
                          maxIt=300,
-                         stopCriterion=7) {
+                         stopCriterion=7,
+                         HTMT_setting_plus=TRUE) {
   # NOTE: update rerun.pls_model() if parameters change!
 
   message("Generating the seminr model")
@@ -169,6 +173,7 @@ estimate_pls <- function(data,
   seminr_model$settings$maxIt <- maxIt
   seminr_model$settings$stopCriterion <- stopCriterion
   seminr_model$settings$missing <- missing
+  seminr_model$settings$HTMT$plus <- HTMT_setting_plus
 
   # Correct for Bias in Reflective models using PLS Consistent
   seminr_model <- model_consistent(seminr_model)
@@ -258,7 +263,8 @@ rerun.pls_model <- function(x, ...) {
     missing           = not_null(args$missing,           x$settings$missing),
     missing_value     = not_null(args$missing_value,     x$settings$missing_value),
     maxIt             = not_null(args$maxIt,             x$settings$maxIt),
-    stopCriterion     = not_null(args$stopCriterion,     x$settings$stopCriterion)
+    stopCriterion     = not_null(args$stopCriterion,     x$settings$stopCriterion),
+    HTMT_setting_plus = not_null(args$HTMT_setting_plus, x$settings$HTMT$plus)
   )
 }
 

@@ -16,32 +16,28 @@ mobi_sm <- relationships(
 
 # Load data, assemble model, and estimate using semPLS
 mobi <- mobi
-seminr_model <- estimate_pls(mobi, mobi_mm, mobi_sm,inner_weights = path_weighting)
+seminr_model <- estimate_pls(mobi, mobi_mm, mobi_sm,inner_weights = path_weighting, HTMT_setting_plus=FALSE)
 summary_object <- summary(seminr_model)
 
 # Load outputs
-# Remove HTMT
-#htmt <- summary_object$metrics$Validity$HTMT
+htmt <- summary_object$validity$htmt
 cross_loadings <- summary_object$validity$cross_loadings
 reliability <- summary_object$reliability
 
 ## Output originally created using following lines
-# write.csv(summary_object$metrics$Validity$HTMT, file = "tests/fixtures/htmt.csv")
+# write.csv(summary_object$validity$htmt, file = "../fixtures/V_3_6_0/htmt.csv")
 # write.csv(summary_object$cross_loadings, file = "tests/fixtures/cross_loadings.csv")
 # write.csv(summary_object$reliability, file = "tests/fixtures/V_3_6_0/reliability.csv")
 # write.csv(summary_object$reliability, file = "tests/fixtures/V_3_5_X/reliability.csv")
 
-# Remove HTMT
-#htmt_control <- as.matrix(read.csv("../fixtures/V_3_5_X/htmt.csv", row.names = 1))
+htmt_control <- as.matrix(read.csv(file = paste(test_folder,"htmt.csv", sep = ""), row.names = 1))
 cross_loadings_control <- as.matrix(read.csv(file = paste(test_folder,"cross_loadings.csv", sep = ""), row.names = 1))
 reliability_control <- as.matrix(read.csv(file = paste(test_folder,"reliability.csv", sep = ""), row.names = 1))
 
 # Testing
-
-# Remove HTMT
-#test_that("Seminr estimates the htmt correctly", {
-#  expect_equal(htmt, htmt_control)
-#})
+test_that("Seminr estimates the htmt correctly", {
+  expect_equal(as.numeric(htmt), as.numeric(htmt_control), tolerance = 0.00001)
+})
 
 test_that("Seminr estimates the cross-loadings correctly", {
   expect_equal(c(round(cross_loadings,3)[1:13,1],
