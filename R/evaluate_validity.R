@@ -60,14 +60,22 @@ HTMT <- function(seminr_model) {
       if (seminr_model$settings$HTMT$plus) {
         item_correlation_matrix <- abs(item_correlation_matrix)
       }
-      HTHM <- mean(item_correlation_matrix)
+      if (seminr_model$settings$HTMT$v1) {
+        HTHM <- mean(item_correlation_matrix)
+      } else {
+        HTHM <- exp(mean(log(item_correlation_matrix)))
+      }
       if(length(manifesti)>1 ) {
         cor_matrix <- stats::cor(seminr_model$data[, manifesti], seminr_model$data[, manifesti])
         if (seminr_model$settings$HTMT$plus) {
           cor_matrix <- abs(cor_matrix)
         }
         diag(cor_matrix) <- 0
-        MTHM <- (2/(length(manifesti)*(length(manifesti)-1)))*(sum(cor_matrix[!lower.tri(cor_matrix)]))
+        if (seminr_model$settings$HTMT$v1) {
+          MTHM <- (2/(length(manifesti)*(length(manifesti)-1)))*(sum(cor_matrix[!lower.tri(cor_matrix)]))
+        } else {
+          MTHM <- exp(mean(log(cor_matrix[lower.tri(cor_matrix)])))
+        }
       } else {
         MTHM <- 1
       }
@@ -77,7 +85,11 @@ HTMT <- function(seminr_model) {
           cor_matrix2 <- abs(cor_matrix2)
         }
         diag(cor_matrix2) <- 0
-        MTHM <- sqrt(MTHM * (2/(length(manifestj)*(length(manifestj)-1)))*(sum(cor_matrix2[!lower.tri(cor_matrix2)])))
+        if (seminr_model$settings$HTMT$v1) {
+          MTHM <- sqrt(MTHM * (2/(length(manifestj)*(length(manifestj)-1)))*(sum(cor_matrix2[!lower.tri(cor_matrix2)])))
+        } else {
+          MTHM <- sqrt(MTHM * exp(mean(log(cor_matrix2[lower.tri(cor_matrix2)]))))
+        }
       } else {
         MTHM <- sqrt(1 * MTHM)
       }
